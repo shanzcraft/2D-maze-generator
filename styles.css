@@ -115,6 +115,7 @@
 
         .info {
             background: #2a2a2a;
+            max-width: 600px;
             padding: 20px;
             border-radius: 10px;
             border-left: 5px solid #e8e4d9;
