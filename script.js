@@ -1,5 +1,8 @@
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
+const solutionCanvas = document.getElementById('solutionCanvas');
+const solutionCtx = solutionCanvas.getContext('2d');
+
 const elements = {
     mazeType: document.getElementById('mazeType'),
     gridSize: document.getElementById('gridSize'),
@@ -13,6 +16,7 @@ const elements = {
 
 let currentMaze = null;
 let lineThickness = 3;
+let solutionVisible = false;
 
 elements.lineThickness.addEventListener('input', (e) => {
     lineThickness = parseInt(e.target.value);
@@ -120,6 +124,13 @@ function drawMazeWalls(maze, size, cell) {
 }
 
 function generateMaze(cols, rows) {
+    if (solutionVisible) {
+        // Hide solution
+        solutionCtx.clearRect(0, 0, solutionCanvas.width, solutionCanvas.height);
+        solutionVisible = false;
+        elements.solveBtn.textContent = 'Show Solution';
+    }
+
     const maze = Array(rows).fill().map(() => 
         Array(cols).fill().map(() => ({ walls: { top: true, right: true, bottom: true, left: true }, visited: false }))
     );
@@ -156,22 +167,34 @@ function removeWall(c, n, maze) {
     if (n.dir === 'left') { maze[c.y][c.x].walls.left=false; maze[n.y][n.x].walls.right=false; }
 }
 
-function showSolution() {
+function toggleSolution() {
     if (!currentMaze) return;
-    const { maze, size, cell } = currentMaze;
-    const path = findMazePath(currentMaze);
-    if (!path) return;
+    
+    if (solutionVisible) {
+        // Hide solution
+        solutionCtx.clearRect(0, 0, solutionCanvas.width, solutionCanvas.height);
+        solutionVisible = false;
+        elements.solveBtn.textContent = 'Show Solution';
+    } else {
+        // Show solution
+        const { maze, size, cell } = currentMaze;
+        const path = findMazePath(currentMaze);
+        if (!path) return;
 
-    ctx.strokeStyle = '#00ff00';
-    ctx.lineWidth = lineThickness + 2;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    path.forEach((c, i) => {
-        const px = c.x * cell + cell/2;
-        const py = c.y * cell + cell/2;
-        if(i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-    });
-    ctx.stroke();
+        solutionCtx.strokeStyle = '#00ff00';
+        solutionCtx.lineWidth = lineThickness + 2;
+        solutionCtx.lineCap = 'round';
+        solutionCtx.beginPath();
+        path.forEach((c, i) => {
+            const px = c.x * cell + cell/2;
+            const py = c.y * cell + cell/2;
+            if(i===0) solutionCtx.moveTo(px, py); else solutionCtx.lineTo(px, py);
+        });
+        solutionCtx.stroke();
+        
+        solutionVisible = true;
+        elements.solveBtn.textContent = 'Hide Solution';
+    }
 }
 
 function findMazePath({ maze, size, goalX, goalY }) {
@@ -220,6 +243,6 @@ elements.mazeType.addEventListener('change', updateMaze);
 elements.gridSize.addEventListener('change', updateMaze);
 elements.lineThickness.addEventListener('input', updateMaze);
 elements.generateBtn.addEventListener('click', updateMaze);
-elements.solveBtn.addEventListener('click', showSolution);
+elements.solveBtn.addEventListener('click', toggleSolution);
 
 updateMaze();
