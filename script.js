@@ -10,6 +10,7 @@ const elements = {
     thicknessValue: document.getElementById('thicknessValue'),
     generateBtn: document.getElementById('generateBtn'),
     solveBtn: document.getElementById('solveBtn'),
+    exportBtn: document.getElementById('exportBtn'),
     infoTitle: document.getElementById('infoTitle'),
     infoText: document.getElementById('infoText')
 };
@@ -239,10 +240,41 @@ function updateMaze() {
     else drawMultiplyConnectedMaze();
 }
 
+function exportMaze() {
+    if (!currentMaze) return;
+    
+    // Create a temporary canvas to combine both layers
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = canvas.width;
+    exportCanvas.height = canvas.height;
+    const exportCtx = exportCanvas.getContext('2d');
+    
+    // Draw the maze canvas
+    exportCtx.drawImage(canvas, 0, 0);
+    
+    // Draw the solution canvas on top if visible
+    if (solutionVisible) {
+        exportCtx.drawImage(solutionCanvas, 0, 0);
+    }
+    
+    // Convert to blob and download
+    exportCanvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const mazeType = elements.mazeType.value;
+        const gridSize = elements.gridSize.value;
+        link.download = `maze-${mazeType}-${gridSize}x${gridSize}.png`;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+    }, 'image/png');
+}
+
 elements.mazeType.addEventListener('change', updateMaze);
 elements.gridSize.addEventListener('change', updateMaze);
 elements.lineThickness.addEventListener('input', updateMaze);
 elements.generateBtn.addEventListener('click', updateMaze);
 elements.solveBtn.addEventListener('click', toggleSolution);
+elements.exportBtn.addEventListener('click', exportMaze);
 
 updateMaze();
