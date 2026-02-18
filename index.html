@@ -24,7 +24,21 @@
 
             <div class="control-group" id="gridControl">
                 <label for="gridSize">Grid Size (Rows × Cols)</label>
-                <input type="number" id="gridSize" min="20" max="100" value="30">
+                <input type="number" id="gridSize" min="20" max="200" value="30">
+            </div>
+
+            <div class="control-group">
+                <label for="mazeShape">Maze Shape</label>
+                <select id="mazeShape">
+                    <option value="square">Square</option>
+                    <option value="circle">Circle</option>
+                    <option value="hexagon">Hexagon</option>
+                    <option value="decagon">Decagon</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="diamond">Diamond</option>
+                    <option value="trefoil">Trefoil</option>
+                    <option value="heart">Heart</option>
+                </select>
             </div>
 
             <div class="control-group">
@@ -60,6 +74,7 @@
 
     <footer>© 2026 Shannon Blitchok</footer>
 
+    <script src="shapes.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
